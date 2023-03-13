@@ -3,7 +3,7 @@ import axios from "axios";
 import "./file.css"
 import fileimg from "./file.png";
 import folderimg from "./folder.png";
-const API_URL = 'http://15.206.70.134:8006';
+const API_URL = 'https://15.206.70.134:8006';
 
 function FileManager() {
     // const [location, setLocation] = useState("/");
@@ -35,79 +35,47 @@ function FileManager() {
     const handleClick = () => {
         // Get the parent folder or root directory based on the current location
         // let locationset = location.split('/').slice(0, -1).join('/');
-
+        if (location == "/") {
+            return;
+        }
         let parentLocation = location.split('/')
+        console.log(parentLocation, "parentlocation");
         // console.log(parentLocation.slice(1, -3), "sliced parentloc")
         // let redirectLocation = "/" + parentLocation.slice(1, -3).join("/")
         let fname = parentLocation[parentLocation.length - 3]
+        console.log(fname, "fname")
         // const redirectLocation = parentLocation || '/';
 
-        console.log("parentlocation", parentLocation);
         // let locationset = parentLocation.slice(0, -2).join("/")
         let locationset = breadcrumb
+        console.log(locationset, " locationset");
         // /a/b/c/d/f/ -- location
         // /a/b/c/d/  -- breakcrumb | f - foldername -- current
         // after back
 
         const parentbreadcrumb = breadcrumb.split('/')
-        // console.log(parent.slice(1, -3), "sliced parentloc")
+        console.log(parentbreadcrumb, " breadcrumb")
+        console.log(parentbreadcrumb.slice(0, -2), " sliced breadcrumb")
         let redirectLocation = parentbreadcrumb.slice(0, -2).join("/")
         // "" / folder1 / a / a / ab / acvd / ""
         // location: "" / folder1 / a / a / ab /
         //     breadcrumb: "" / folder1 / a / a /
 
-        console.log("locationset", locationset);
 
-        console.log(redirectLocation, "redirect")
-        console.log(fname, "fname")
+        console.log(redirectLocation, " redirect")
         // console.log(breadredirect, "breadcrumb")
 
         setLocation(locationset)
-        setBreadcrumb(redirectLocation)
+        setBreadcrumb(redirectLocation + "/")
         // setLocation(locationset + "/")
         // setBreadcrumb(redirectLocation + (fname === "" ? "" : fname + "/"))
         // setBreadcrumb(breadredirect)
         setName(fname)
-        redirectLocation = `${redirectLocation}`
+        // redirectLocation = `${redirectLocation}`
         // redirectLocation = `${redirectLocation}/`
         console.log(name, location);
-        fetchFolders(fname, redirectLocation);
+        fetchFolders(fname, redirectLocation + "/");
     };
-
-    // const handleClick = () => {
-    //     const parentLocation = location.split('/')
-    //     console.log(parentLocation.slice(1, -3), "sliced parentloc")
-    //     // let redirectLocation = "/" + parentLocation.slice(1, -3).join("/")
-    //     let fname = parentLocation[parentLocation.length - 3]
-    //     const locationParts = location.split('/');
-    //     // Remove the last directory from the location
-    //     locationParts.splice(-2, 1);
-    //     const newLocation = locationParts.join('/');
-
-    //     // const breadcrumbparts = breadcrumb.split('/');
-    //     // // Remove the last directory from the location
-    //     // breadcrumbparts.splice(-2, 1);
-    //     // const newbreadcrumb = breadcrumbparts.join('/');
-    //     // Check if the new location is the root directory
-    //     if (newLocation === '/') {
-    //         // Disable the button if the current location is the root directory
-    //         return;
-    //     }
-    //     // setLocation(newLocation)
-    //     // fetchFolders(fname, newLocation)
-
-
-
-    //     // Update the location and fetch the new folder contents
-    //     // setLocation(newLocation);
-    //     // // setLocation(newbreadcrumb);
-    //     // console.log("newlocation", newLocation);
-    //     // console.log("newfoldername", fname);
-    //     // console.log("newbreadcrumb", breadcrumb);
-    //     // setCurrentFolder(locationParts[locationParts.length - 2]);
-    //     // fetchFolders(fname, breadcrumb);
-    //     // fetchFolders(locationParts[locationParts.length - 2], newLocation);
-    // };
 
 
     useEffect(() => {
@@ -116,11 +84,11 @@ function FileManager() {
     }, [location]);
 
     //   ---------------------------------------------------------TO FETCH FOLDER------------------------------------------- 
-    const fetchFolders = (name, location) => {
+    const fetchFolders = (name, breadcrumb) => {
         return new Promise((resolve, reject) => {
             // console.log("heyy");
             // console.log("fetchfolders", name, location);
-            axios.get(`${API_URL}/folder?location=${location}&name=${name}`)
+            axios.get(`${API_URL}/folder?location=${breadcrumb}&name=${name}`)
                 .then(response => {
                     // console.log(response.data);
                     setFolders(response.data.folders || []);
