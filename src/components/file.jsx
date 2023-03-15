@@ -3,7 +3,8 @@ import axios from "axios";
 import "./file.css"
 import fileimg from "./file.png";
 import folderimg from "./folder.png";
-const API_URL = 'https://15.206.70.134:8006';
+
+const API_URL = 'http://15.206.70.134:8006';
 
 function FileManager() {
     // const [location, setLocation] = useState("/");
