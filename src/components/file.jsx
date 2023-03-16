@@ -4,7 +4,9 @@ import "./file.css"
 import fileimg from "./file.png";
 import folderimg from "./folder.png";
 
-const API_URL = 'http://15.206.70.134:8006';
+const API_URL = 'https://www.gdrive.vasaniyakush.tech';
+// const API_URL = 'www.gdrive.vasaniyakush.tech';
+// const API_URL = 'http://15.206.70.134:8006';
 
 function FileManager() {
     // const [location, setLocation] = useState("/");
@@ -89,7 +91,8 @@ function FileManager() {
         return new Promise((resolve, reject) => {
             // console.log("heyy");
             // console.log("fetchfolders", name, location);
-            axios.get(`${API_URL}/folder?location=${breadcrumb}&name=${name}`)
+            axios.get(`${API_URL}/folder/?location=${breadcrumb}&name=${name}`)
+                // axios.get(`https://www.gdrive.vasaniyakush.tech/folder/?location=/&name=folder1`)
                 .then(response => {
                     // console.log(response.data);
                     setFolders(response.data.folders || []);
@@ -110,7 +113,7 @@ function FileManager() {
     const createFolder = (namee, location) => {
         return new Promise((resolve, reject) => {
             // console.log(location);
-            axios.post(`${API_URL}/folder?location=${location}`, {
+            axios.post(`${API_URL}/folder/?location=${location}`, {
                 name: namee,
                 location: location,
             })
@@ -136,7 +139,7 @@ function FileManager() {
     const handlerenameFolder = async (location) => {
         try {
             // console.log("ada", renameFileName.oldName, renameFileName.newName, location)
-            await axios.put(`${API_URL}/folder`, {
+            await axios.put(`${API_URL}/folder/`, {
                 oldName: renameFolderName.oldName,
                 newName: renameFolderName.newName,
                 location: location,
@@ -154,7 +157,7 @@ function FileManager() {
     //   ---------------------------------------------------------TO DELTE A FOLDER------------------------------------------- 
     const handleDeleteFolder = async (deleteFolderName, location) => {
         try {
-            await axios.delete(`${API_URL}/folder`, {
+            await axios.delete(`${API_URL}/folder/`, {
                 data: {
                     location: location,
                     name: deleteFolderName
@@ -210,7 +213,7 @@ function FileManager() {
             console.log("loc", location);
             // const response = await axios.get(`${API_URL}/file?location=${location}&name=${name}`);
             const newLocation = currentFolder === "" ? `/` : `${location}${currentFolder}/`;
-            axios.get(`${API_URL}/file?location=${newLocation}&name=${name}`)
+            axios.get(`${API_URL}/file/?location=${newLocation}&name=${name}`)
                 .then(response => {
                     // console.log("data", response.data);
                     // console.log("content", response.data.content);
@@ -270,7 +273,7 @@ function FileManager() {
                 const fileContent = evt.target.result;
                 // console.log("filecontent", fileContent);
 
-                axios.post(`${API_URL}/file`, {
+                axios.post(`${API_URL}/file/`, {
                     name: file.name,
                     location: location,
                     content: fileContent
@@ -293,7 +296,7 @@ function FileManager() {
     const handleRenameFile = async (location) => {
         try {
             // console.log("ada", renameFileName.oldName, renameFileName.newName, location)
-            await axios.put(`${API_URL}/file`, {
+            await axios.put(`${API_URL}/file/`, {
                 oldName: renameFileName.oldName,
                 newName: renameFileName.newName,
                 location: location,
@@ -313,7 +316,7 @@ function FileManager() {
     const handleDeleteFile = async (deleteFileName, location) => {
         try {
             console.log("ada", deleteFileName, location);
-            await axios.delete(`${API_URL}/file`, {
+            await axios.delete(`${API_URL}/file/`, {
                 data: {
                     location: location,
                     name: deleteFileName,
