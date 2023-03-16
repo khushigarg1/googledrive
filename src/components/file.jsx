@@ -67,7 +67,7 @@ function FileManager() {
 
         console.log(redirectLocation, " redirect")
         // console.log(breadredirect, "breadcrumb")
-
+        setCurrentFolder(fname);
         setLocation(locationset)
         setBreadcrumb(redirectLocation + "/")
         // setLocation(locationset + "/")
@@ -193,6 +193,7 @@ function FileManager() {
                 setBreadcrumb(location);
                 const newLocation = location === '/' ? `/${folderName}/` : `${location}${folderName}/`;
                 setLocation(newLocation);
+                setCurrentFolder(folderName)
                 // console.log("breadcrumbcreate", breadcrumb);
                 // console.log("namecreate", name);
                 // console.log("createlocation", location);
@@ -211,8 +212,11 @@ function FileManager() {
         return new Promise((resolve, reject) => {
             setVisiblefile(true)
             console.log("loc", location);
+            console.log("curr", currentFolder);
             // const response = await axios.get(`${API_URL}/file?location=${location}&name=${name}`);
-            const newLocation = currentFolder === "" ? `/` : `${location}${currentFolder}/`;
+            // const newLocation = currentFolder ==
+            const newLocation = currentFolder === "" ? "/" : `${location}${currentFolder}/`;
+            console.log("new", newLocation);
             axios.get(`${API_URL}/file/?location=${newLocation}&name=${name}`)
                 .then(response => {
                     // console.log("data", response.data);
