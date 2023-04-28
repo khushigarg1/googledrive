@@ -9,20 +9,17 @@ const API_URL = 'https://www.gdrive.vasaniyakush.tech';
 // const API_URL = 'http://15.206.70.134:8006';
 
 function FileManager() {
-    // const [location, setLocation] = useState("/");
-    // const [folders, setFolders] = useState([]);
-    // const [newFolderName, setNewFolderName] = useState("");
-    const [location, setLocation] = useState("/");    //set location at top 
-    const [breadcrumb, setBreadcrumb] = useState("/");  //which is used to set location when we are creating new folder and sending this location to api
-    const [folders, setFolders] = useState([]);         //set fodlers name according to location
-    const [name, setName] = useState("");               //current folder name
-    const [files, setFiles] = useState([]);             //set file name accoridng to location
+    const [location, setLocation] = useState("/");              //set location at top 
+    const [breadcrumb, setBreadcrumb] = useState("/");          //which is used to set location when we are creating new folder and sending this location to api
+    const [folders, setFolders] = useState([]);                 //set fodlers name according to location
+    const [name, setName] = useState("");                       //current folder name
+    const [files, setFiles] = useState([]);                     //set file name accoridng to location
     const [newFolderName, setNewFolderName] = useState("");     //creating new fodler 
     // const [renameFolderName, setRenameFolderName] = useState("");
-    const [renameFolderName, setRenameFolderName] = useState({ oldName: '', newName: '' });     //after renaming a fodler which stores oldname and newname
+    const [renameFolderName, setRenameFolderName] = useState({ oldName: '', newName: '' });     //after renaming a folder which stores oldname and newname
+    const [deleteFolderName, setDeleteFolderName] = useState("");       //fodlername which we want to delete
     // const [renameFileName, setRenameFileName] = useState("");
     const [renameFileName, setRenameFileName] = useState({ oldName: '', newName: '' });         //afetr renaming a file which stores oldname and newname
-    const [deleteFolderName, setDeleteFolderName] = useState("");       //fodlername which we want to delete
     const [deleteFileName, setDeleteFileName] = useState("");           //filename which we want to delete
     const [selectedFile, setSelectedFile] = useState(null);             //when we are uploading a file 
     const [visiblefile, setVisiblefile] = useState(false);              //whenw e click on file it should be visible 
@@ -41,16 +38,15 @@ function FileManager() {
         if (location == "/") {
             return;
         }
-        let parentLocation = location.split('/')
+        let parentLocation = location.split('/')                    //location will get split by / 
         console.log(parentLocation, "parentlocation");
-        // console.log(parentLocation.slice(1, -3), "sliced parentloc")
-        // let redirectLocation = "/" + parentLocation.slice(1, -3).join("/")
-        let fname = parentLocation[parentLocation.length - 3]
-        console.log(fname, "fname")
-        // const redirectLocation = parentLocation || '/';
+        console.log(parentLocation.length, "parentlocation");
 
-        // let locationset = parentLocation.slice(0, -2).join("/")
-        let locationset = breadcrumb
+        let fname = parentLocation[parentLocation.length - 3]
+        console.log(fname, "fname")                 //current folder after clicking ..
+
+
+        let locationset = breadcrumb                //breadcrumb like location of current folder
         console.log(locationset, " locationset");
         // /a/b/c/d/f/ -- location
         // /a/b/c/d/  -- breakcrumb | f - foldername -- current
@@ -58,11 +54,11 @@ function FileManager() {
 
         const parentbreadcrumb = breadcrumb.split('/')
         console.log(parentbreadcrumb, " breadcrumb")
-        console.log(parentbreadcrumb.slice(0, -2), " sliced breadcrumb")
+        console.log(parentbreadcrumb.slice(0, -2), " sliced breadcrumb")            //Before last 2
         let redirectLocation = parentbreadcrumb.slice(0, -2).join("/")
         // "" / folder1 / a / a / ab / acvd / ""
         // location: "" / folder1 / a / a / ab /
-        //     breadcrumb: "" / folder1 / a / a /
+        //     breadcrumb/redirectlocation : "" / folder1 / a / a /
 
 
         console.log(redirectLocation, " redirect")
@@ -74,20 +70,18 @@ function FileManager() {
         // setBreadcrumb(redirectLocation + (fname === "" ? "" : fname + "/"))
         // setBreadcrumb(breadredirect)
         setName(fname)
-        // redirectLocation = `${redirectLocation}`
-        // redirectLocation = `${redirectLocation}/`
         console.log(name, location);
         fetchFolders(fname, redirectLocation + "/");
     };
 
-
+    //dependency on location
     useEffect(() => {
         console.log(name, location);
         fetchFolders(name, breadcrumb);
     }, [location]);
 
-    //   ---------------------------------------------------------TO FETCH FOLDER------------------------------------------- 
-    const fetchFolders = (name, breadcrumb) => {
+    //---------------------------------------------------------TO FETCH FOLDERS------------------------------------------------
+    const fetchFolders = (name, breadcrumb) => {            //name=cureentfolder, breadcrumb = folders location
         return new Promise((resolve, reject) => {
             // console.log("heyy");
             // console.log("fetchfolders", name, location);
@@ -109,8 +103,8 @@ function FileManager() {
         });
     };
 
-    //   ---------------------------------------------------------TO CREATE A FOLDER------------------------------------------- 
-    const createFolder = (namee, location) => {
+    //   -------------------------------------------------------TO CREATE A FOLDER------------------------------------------- 
+    const createFolder = (namee, location) => {             //foldername and location at which we want to create a folder
         return new Promise((resolve, reject) => {
             // console.log(location);
             axios.post(`${API_URL}/folder/?location=${location}`, {
@@ -147,7 +141,7 @@ function FileManager() {
             // console.log("name", name);
             // console.log("breadcrumb", breadcrumb);
             await fetchFolders(name, breadcrumb)
-            setRenameFileName("");
+            setRenameFolderName("");
         } catch (error) {
             alert("Failed to rename the folder");
             console.error(error);
@@ -259,20 +253,22 @@ function FileManager() {
 
     //   ---------------------------------------------------------HANDLING SELECTED FILE------------------------------------------- 
     const handleSelectFile = (e) => {
-        setSelectedFile(e.target.files[0]);
+        setSelectedFile(e.target.files[0]);                 //to retrieve the first file in the array
     };
 
     //   ---------------------------------------------------------TO UPLOAD A FILE------------------------------------------- 
     const handleFileUpload = (file, location) => {
         return new Promise((resolve, reject) => {
+            //filereader is an object which is used to read the content of the file 
             const fileReader = new FileReader();
-            fileReader.readAsText(file, "UTF-8");
+            fileReader.readAsText(file, "UTF-8");               //string of characters encoded in UTF-8 format
 
-            const formData = new FormData();
-            // formData.append("file", file);
-            formData.append("name", file.name);
+            // const formData = new FormData();
+            // // formData.append("file", file);
+            // formData.append("name", file.name);
 
             // console.log("creatfiledata", name, location);
+            // onload event is triggered -> FileReader finishes reading contents of file
             fileReader.onload = (evt) => {
                 const fileContent = evt.target.result;
                 // console.log("filecontent", fileContent);
@@ -315,7 +311,7 @@ function FileManager() {
         }
     };
 
-    //   ---------------------------------------------------------TO DELTE A FILE------------------------------------------- 
+    //   -----------------------------------------------------TO DELTE A FILE------------------------------------------- 
     // const handleDeleteFile = (deleteFileName, location) => {
     const handleDeleteFile = async (deleteFileName, location) => {
         try {
@@ -329,6 +325,7 @@ function FileManager() {
             // console.log("name", name);
             // console.log("breadcrumb", breadcrumb);
             await fetchFolders(name, breadcrumb);
+            setVisiblefile(false)
         } catch (error) {
             alert("Failed to remove the file");
             console.error(error);
